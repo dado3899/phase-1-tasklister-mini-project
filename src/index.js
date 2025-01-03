@@ -1,87 +1,50 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // your code here
-  // As a user, I should be able to type a task into the input field.
-  // As a user, I should be able to click some form of a submit button.
-  // addEventListener('submit',(e)=>{})
-  const taskArray = []
-  document.querySelector("#create-task-form").addEventListener('submit',handleSubmit)
-  function handleSubmit(e){
-    // As a user, I expect to see the task string that I provided appear 
-    // in the DOM after the submit button has been activated.
-    e.preventDefault()
-    // console.log(e.target['priority'].value)
-    let priority
-    if(e.target['priority'].value ==="green"){
-      priority = 1
-    }
-    else if(e.target['priority'].value ==="yellow"){
-      priority = 2
-    }
-    else{
-      priority = 3
-    }
-    const newTaskObj = {
-      value :  e.target['new-task-description'].value,
-      color : e.target['priority'].value,
-      priorityNum : priority
-    }
-    renderTask(newTaskObj)
-    taskArray.push(newTaskObj)
-  }
-  // console.log("In dom content loaded")
-  // => red < yellow < green
-  
-  function renderTask(newTaskObj){
-    const li = document.createElement('li')
-    const tasks = document.querySelector("#tasks")
-    li.className = newTaskObj.color
-    li.textContent = newTaskObj.value
-    tasks.append(li)
-    
-    const button = document.createElement("button")
-    button.textContent = 'x'
-    button.addEventListener('click', ()=>{
-      li.remove()
-    })
-    li.append(button)
-  }
+  //grabs all the necessary DOM elements.
 
-  document.querySelector("#ad").addEventListener('change',(e)=>{
-    console.log(e.target.value)
-    //Clear out the list
-    document.querySelector("#tasks").innerHTML = ""
-    //change order of array
-    if(e.target.value === "descending"){
-      taskArray.sort(compareFndesc)
-    }
-    else{
-      taskArray.sort(compareFnasc)
-    }
-    // console.log(taskArray)
-    taskArray.forEach((task)=>{
-      renderTask(task)
-    })
-    //rerender list
+  //set the newTaskForm to a variable.
+  const newTaskForm = document.querySelector('form');
+
+  //attach a submit event listener to newTaskForm.
+  newTaskForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    //create a variable called newToDo that holds the value of the targeted input.
+    const newToDo = e.target.querySelector('#new-task-description').value
+
+    //pass in the newToDo variable as an argument to buildToDo. 
+    buildToDo(newToDo);
+
+    //after buildToDo function runs, reset the newTaskForm so the input is empty
+    newTaskForm.reset();
   })
-
-  function compareFndesc(a, b) {
-    if (a.priorityNum < b.priorityNum) {
-      return -1;
-    } else if (a.priorityNum > b.priorityNum) {
-      return 1;
-    }
-    // a must be equal to b
-    return 0;
-  }
-  function compareFnasc(a, b) {
-    if (a.priorityNum > b.priorityNum) {
-      return -1;
-    } else if (a.priorityNum < b.priorityNum) {
-      return 1;
-    }
-    // a must be equal to b
-    return 0;
-  }
-
-
 });
+
+  //when user submits, we pass in the targeted input into buildToDo function
+  function buildToDo(newToDo){
+    //first, the buildToDo function creates an li element and a button element. 
+    const taskLi = document.createElement('li');
+    const deleteButton = document.createElement('button');
+
+    //next, we set the textContent of the btn element to 'x'.
+    deleteButton.textContent = 'x';
+
+    //after, we set the textContent of the li element to the todo parameter.
+    //remember, when we submit, we are passing in targeted input into the parameters. 
+    taskLi.textContent = newToDo;
+
+    //next, we append the new btn to the li.
+    taskLi.appendChild(deleteButton);
+
+    //then, we add the li element to the ul element with id of tasks
+    document.querySelector('#tasks').appendChild(taskLi);
+  
+  
+    //finally, we attach a click event listener to the btn which invokes the handleDelete function
+    deleteButton.addEventListener('click', handleDelete);
+  }
+
+  //when the button element with the textContent of 'x' is clicked, this function will run.
+  function handleDelete(e){
+    //this function targets the parent node of the button and removes it.
+    //in this case, the parentNode of the button element is the li element, so the li is removed from the list.
+    e.target.parentNode.remove();
+  }
